@@ -1,12 +1,12 @@
 // IMPORT LIBRARIES/DEPENDENCIES
-const express = require('express'); // import the express framework
-const router = express.Router(); // create a router instance // allows us to define routes for the users resource
-const db = require('../database/db'); // import the database connection pool so it can be used in this file
+const express = require('express'); // IMPORT THE EXPRESS FRAMEWORK
+const router = express.Router(); // CREATE A ROUTER INSTANCE // ALLOWS US TO DEFINE ROUTES FOR THE USERS RESOURCE
+const db = require('../database/db'); // IMPORT THE DATABASE CONNECTION POOL SO IT CAN BE USED IN THIS FILE
 
 // DEFINE ROUTES/API ENDPOINTS
 
 // GET ALL USERS
-// GET REQUEST: http://url/api/users
+// GET REQUEST: HTTP://URL/API/USERS
 router.get('/', async (req, res) => {
     try 
     {
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET A SINGLE USER BY ID
-// GET REQUEST: http://url/api/users/:id
+// GET REQUEST: HTTP://URL/API/USERS/:ID
 router.get('/:id', async (req, res) => {
     try 
     {
@@ -42,7 +42,7 @@ router.get('/:id', async (req, res) => {
       else
       {
          // QUERY THE DATABASE TO GET THE USER WITH THE SPECIFIED ID
-         // The $1 is a placeholder for the id parameter, which helps prevent SQL injection attacks
+         // THE $1 IS A PLACEHOLDER FOR THE ID PARAMETER, WHICH HELPS PREVENT SQL INJECTION ATTACKS
          const result = await db.query('SELECT * FROM users WHERE id = $1', [id]);
 
          // CHECK IF THE USER EXISTS
@@ -69,7 +69,7 @@ router.get('/:id', async (req, res) => {
 });   
 
 // CREATE A NEW USER
-// POST REQUEST: http://url/api/users
+// POST REQUEST: HTTP://URL/API/USERS
 router.post('/', async (req, res) => {
    try 
    {
@@ -97,7 +97,7 @@ router.post('/', async (req, res) => {
       }
 
       // QUERY THE DATABASE TO CREATE A NEW USER   
-      // The $1 and $2 are placeholders for the name and email parameters, which helps prevent SQL injection attacks
+      // THE $1 AND $2 ARE PLACEHOLDERS FOR THE NAME AND EMAIL PARAMETERS, WHICH HELPS PREVENT SQL INJECTION ATTACKS
       // The RETURNING * clause is used to return the newly created user
       const result = await db.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email]);
 
@@ -124,7 +124,7 @@ router.post('/', async (req, res) => {
 });
 
 // UPDATE A USER
-// PUT REQUEST: http://url/api/users/:id
+// PUT REQUEST: HTTP://URL/API/USERS/:ID
 router.put('/:id', async (req, res) => {
    try
    {
@@ -188,7 +188,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE A USER
-// DELETE REQUEST: http://url/api/users/:id
+// DELETE REQUEST: HTTP://URL/API/USERS/:ID
 router.delete('/:id', async (req, res) => {
    try
    {
@@ -229,7 +229,7 @@ router.delete('/:id', async (req, res) => {
 })
 
 
-// EXPORT THIS ROUTER TO BE USED IN THE MAIN APPLICATION OR OTHER PARTS OF THE APPLICATION
+// EXPORT THE ROUTER SO IT CAN BE USED IN THE MAIN APPLICATION OR OTHER PARTS OF THE APPLICATION
 // USER ROUTE WILL HAVE DIFFERENT ENDPOINTS THAT CAN BE USED TO GET, CREATE, UPDATE, AND DELETE USERS
 module.exports = router;
 
