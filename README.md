@@ -11,6 +11,12 @@ A robust RESTful API built with Node.js, Express, and PostgreSQL for managing us
   - Delete users
   - List all users
 
+- **Authentication**
+  - JWT-based authentication
+  - Secure login endpoint
+  - Token-based authorization
+  - Token expiration (1 hour)
+
 - **Database Integration**
   - PostgreSQL database with connection pooling
   - Efficient query handling
@@ -21,9 +27,10 @@ A robust RESTful API built with Node.js, Express, and PostgreSQL for managing us
   - Email format verification
   - Duplicate email prevention
   - CORS support for cross-origin requests
+  - JWT token validation
 
 - **API Structure**
-  - RESTful endpoints under `/api/users`
+  - RESTful endpoints under `/api/users` and `/api/auth`
   - JSON response format
   - Proper HTTP status codes
   - Logging API Requests and error handling middleware
@@ -32,6 +39,7 @@ A robust RESTful API built with Node.js, Express, and PostgreSQL for managing us
 
 - **Backend Framework**: Node.js with Express
 - **Database**: PostgreSQL
+- **Authentication**: JSON Web Tokens (JWT)
 - **Port**: 6543 (default)
 - **API Format**: RESTful with JSON responses
 
@@ -39,7 +47,7 @@ A robust RESTful API built with Node.js, Express, and PostgreSQL for managing us
 
 ```
 usercrud-api/
-├── authorization/     # Authentication middleware
+├── authorization/     # Authentication middleware and JWT handling
 ├── database/         # Database configuration and queries
 ├── middleware/       # Custom middleware
 ├── routes/          # API route definitions
@@ -64,11 +72,15 @@ usercrud-api/
 
 ## API Endpoints
 
+### User Management
 - `GET /api/users` - Get all users
 - `GET /api/users/:id` - Get a specific user
 - `POST /api/users` - Create a new user
 - `PUT /api/users/:id` - Update a user
 - `DELETE /api/users/:id` - Delete a user
+
+### Authentication
+- `POST /api/auth/login` - Authenticate user and receive JWT token
 
 ## Environment Variables
 
@@ -81,6 +93,7 @@ DATABASE=your_database
 USER=your_username
 PASSWORD=your_password
 POOL_MODE=transaction
+JWT_SECRET=your_jwt_secret_key
 ```
 
 ## Error Handling
@@ -91,6 +104,8 @@ The API includes comprehensive error handling for:
 - Duplicate entries
 - Not found resources
 - Server errors
+- Authentication failures
+- Invalid tokens
 
 ## Contributing
 
