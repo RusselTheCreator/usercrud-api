@@ -11,12 +11,12 @@ const JWT_SECRET = process.env.JWT_SECRET; //GET THE JWT SECRET KEY FROM THE ENV
 // DEFINE ROUTES/API ENDPOINTS
 // POST REQUEST: HTTP://URL/API/AUTH/LOGIN
 router.post('/login', async (req, res) => {
-   const { email, password } = req.body; //GET THE EMAIL AND PASSWORD FROM THE REQUEST BODY
+   const { email } = req.body; //GET THE EMAIL AND PASSWORD FROM THE REQUEST BODY
 
-   if(!email || !password) 
+   if(!email) 
    {
       // SEND A 400 BAD REQUEST RESPONSE TO THE CLIENT AS A JSON RESPONSE
-      return res.status(400).json({error: 'Username and password are required'});
+      return res.status(400).json({error: 'email is required'});
    }
    else
    {
@@ -41,7 +41,7 @@ router.post('/login', async (req, res) => {
                { expiresIn: '1h' });
 
             // LET THE CLIENT KNOW THAT THE LOGIN WAS SUCCESSFUL AND SEND THE TOKEN
-            req.status(200).json({ message: 'Login successful', user: user, token });
+            res.status(200).json({ message: 'Login successful', user: {id: user.id, name: user.name, email: user.email, created_at: user.created_at}, token });
          }
       }
       catch (error)

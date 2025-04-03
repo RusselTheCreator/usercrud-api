@@ -7,8 +7,8 @@ dotenv.config(); // LOADS THE ENVIRONMENT VARIABLES FROM THE .ENV FILE
 
 // IMPORT ROUTES
 const users = require('./routes/users'); // IMPORT THE USERS ROUTER
+const auth = require('./routes/auth'); // IMPORT THE AUTH ROUTER
 const logger = require('./middleware/logger'); // IMPORT THE LOGGER MIDDLEWARE
-const auth = require('./authorization/auth'); // IMPORT THE AUTH ROUTER/MIDDLEWARE
 
 // CREATE AN INSTANCE OF THE EXPRESS APPLICATION
 // CREATES A NEW EXPRESS APP (THIS APPLICATION)

@@ -2,6 +2,10 @@
 const express = require('express'); // IMPORT THE EXPRESS FRAMEWORK
 const router = express.Router(); // CREATE A ROUTER INSTANCE // ALLOWS US TO DEFINE ROUTES FOR THE USERS RESOURCE
 const db = require('../database/db'); // IMPORT THE DATABASE CONNECTION POOL SO IT CAN BE USED IN THIS FILE
+const authenticateToken = require('../middleware/authMiddleware'); // IMPORT THE AUTHENTICATION MIDDLEWARE
+
+// Protect ALL routes
+router.use(authenticateToken); // USE THE AUTHENTICATION MIDDLEWARE TO PROTECT ALL ROUTES IN THIS ROUTER
 
 // DEFINE ROUTES/API ENDPOINTS
 
@@ -54,7 +58,7 @@ router.get('/:id', async (req, res) => {
          else
          {
             // SEND THE RESULT BACK TO THE CLIENT AS A JSON RESPONSE
-            res.status(200).json({ message: "User fetched successfully", user: result.rows[0]});
+            res.status(200).json({ message: "User fetched successfully", user: result.rows[0], authenticatedUserData: req.user});
          }
       }
     }
