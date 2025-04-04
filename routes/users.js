@@ -7,8 +7,9 @@ const bcryptjs = require('bcryptjs'); // IMPORT THE BCRYPTJS LIBRARY TO HASH AND
 // DEFINE ROUTES/API ENDPOINTS
 
 // CREATE A NEW USER
+// ONLY ADMIN CAN CREATE A NEW USER
 // POST REQUEST: HTTP://URL/API/USERS
-router.post('/', async (req, res) => {
+router.post('/', authorizeRole('admin'), async (req, res) => {
    try 
    {
       const { name, email, password, role } = req.body; // GET THE NAME AND EMAIL FROM THE BODY OF THE REQUEST
@@ -69,8 +70,9 @@ router.post('/', async (req, res) => {
 });
 
 // GET ALL USERS
+// ONLY ADMIN CAN GET ALL USERS
 // GET REQUEST: HTTP://URL/API/USERS
-router.get('/', async (req, res) => {
+router.get('/', authorizeRole('admin'), async (req, res) => {
     try 
     {
       // QUERY THE DATABASE TO GET ALL USERS
@@ -90,8 +92,10 @@ router.get('/', async (req, res) => {
 });
 
 // GET A SINGLE USER BY ID
+// ADMIN CAN GET A SINGLE USER BY ID
+// USER CAN GET THEIR OWN USER INFORMATION
 // GET REQUEST: HTTP://URL/API/USERS/:ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', authorizeRole('admin'),async (req, res) => {
     try 
     {
       const { id } = req.params; // GET THE ID FROM THE URL PARAMETERS
@@ -132,6 +136,7 @@ router.get('/:id', async (req, res) => {
 });   
 
 // UPDATE A USER
+// ONLY ADMIN CAN UPDATE A USER
 // PUT REQUEST: HTTP://URL/API/USERS/:ID
 router.put('/:id', async (req, res) => {
    try
@@ -196,8 +201,9 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE A USER
+// ONLY ADMIN CAN DELETE A USER
 // DELETE REQUEST: HTTP://URL/API/USERS/:ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authorizeRole('admin'), async (req, res) => {
    try
    {
       const { id } = req.params; // GET THE ID FROM THE URL PARAMETERS
