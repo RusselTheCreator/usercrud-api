@@ -30,7 +30,7 @@ A robust RESTful API built with Node.js, Express, and PostgreSQL for managing us
   - JWT token validation
 
 - **API Structure**
-  - RESTful endpoints under `/api/users` and `/api/auth`
+  - RESTful endpoints under `/api/users` and `/api/authentication`
   - JSON response format
   - Proper HTTP status codes
   - Logging API Requests and error handling middleware
@@ -39,7 +39,10 @@ A robust RESTful API built with Node.js, Express, and PostgreSQL for managing us
 
 - **Backend Framework**: Node.js with Express
 - **Database**: PostgreSQL
-- **Authentication**: JSON Web Tokens (JWT)
+- **Authentication**: JSON Web Tokens
+- **Security**: bcryptjs
+- **Middleware**: CORS
+- **Configuration**: dotenv
 - **Port**: 6543 (default)
 - **API Format**: RESTful with JSON responses
 
@@ -80,7 +83,8 @@ usercrud-api/
 - `DELETE /api/users/:id` - Delete a user
 
 ### Authentication
-- `POST /api/auth/login` - Authenticate user and receive JWT token
+- `POST /api/authentication/register` - Register user with password encryption using brcyptjs 
+- `POST /api/authentication/login` - Authenticate user and receive JWT token
 
 ## Environment Variables
 
