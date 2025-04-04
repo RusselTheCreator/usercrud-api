@@ -64,7 +64,6 @@ router.post('/register', async (req, res) => {
    }
 });
 
-
 // POST REQUEST: HTTP://URL/API/AUTHENTICATION/LOGIN
 router.post('/login', async (req, res) => {
    const { email, password } = req.body; //GET THE EMAIL AND PASSWORD FROM THE REQUEST BODY
