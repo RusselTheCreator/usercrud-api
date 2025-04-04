@@ -2,12 +2,71 @@
 const express = require('express'); // IMPORT THE EXPRESS FRAMEWORK
 const router = express.Router(); // CREATE A ROUTER INSTANCE // ALLOWS US TO DEFINE ROUTES FOR THE USERS RESOURCE
 const db = require('../database/db'); // IMPORT THE DATABASE CONNECTION POOL SO IT CAN BE USED IN THIS FILE
-const authenticateToken = require('../middleware/authMiddleware'); // IMPORT THE AUTHENTICATION MIDDLEWARE
-
-// Protect ALL routes
-router.use(authenticateToken); // USE THE AUTHENTICATION MIDDLEWARE TO PROTECT ALL ROUTES IN THIS ROUTER
+const bcryptjs = require('bcryptjs'); // IMPORT THE BCRYPTJS LIBRARY TO HASH AND SALT THE PASSWORD
 
 // DEFINE ROUTES/API ENDPOINTS
+
+// CREATE A NEW USER
+// POST REQUEST: HTTP://URL/API/USERS
+router.post('/', async (req, res) => {
+   try 
+   {
+      const { name, email, password, role } = req.body; // GET THE NAME AND EMAIL FROM THE BODY OF THE REQUEST
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      // VALIDATION CHECKS
+      if(!name || typeof name !== 'string' || name.length < 2)
+      {
+         return res.status(400).json({ error: 'Name must be atleast 2 characters' });
+      }
+      if(!email || typeof email !== 'string' || !email.match(emailRegex))
+      {
+         return res.status(400).json({ error: 'Invalid email address' });
+      }
+      else
+      {
+         // CHECK IF EMAIL ALREADY EXISTS
+         const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+         
+         if(existingUser.rows.length > 0)
+         {
+            return res.status(400).json({ error: 'Email already exists' });
+         }
+      }
+      if(!password || typeof password !== 'string' || password.length < 8)
+      {
+         return res.status(400).json({ error: 'Password must be atleast 8 characters' });
+      }
+      
+      // HASH AND SALT THE PASSWORD
+      const hashedPassword = await bcryptjs.hash(password, 10);
+      
+      // QUERY THE DATABASE TO CREATE A NEW USER   
+      // THE $1, $2, $3 ARE PLACEHOLDERS FOR THE NAME, EMAIL, AND PASSWORD PARAMETERS, WHICH HELPS PREVENT SQL INJECTION ATTACKS
+      // The RETURNING * clause is used to return the newly created user
+      const result = await db.query('INSERT INTO users (name, email) VALUES ($1, $2, $3) RETURNING name, email, role', [name, email, hashedPassword, role]);
+
+      // CHECK IF THE USER WAS CREATED SUCCESSFULLY
+      if(result.rows.length === 0)
+      {
+         // SEND A 400 BAD REQUEST RESPONSE TO THE CLIENT AS A JSON RESPONSE
+         return res.status(400).json({ error: 'Failed to create user' });
+      }
+      else  
+      {
+         // SEND THE RESULT BACK TO THE CLIENT AS A JSON RESPONSE
+         res.status(200).json({ message: "User created successfully", user: result.rows[0]});
+      }
+   }
+   catch (error)
+   {
+      // IF AN ERROR OCCURS, LOG THE ERROR AND SEND A 500 INTERNAL SERVER ERROR RESPONSE TO THE CLIENT
+      console.error('Error creating user:', error);
+
+      // SEND A 500 INTERNAL SERVER ERROR RESPONSE TO THE CLIENT AS A JSON RESPONSE
+      res.status(500).json({ error: 'Internal server error' });
+   }
+});
 
 // GET ALL USERS
 // GET REQUEST: HTTP://URL/API/USERS
@@ -58,7 +117,7 @@ router.get('/:id', async (req, res) => {
          else
          {
             // SEND THE RESULT BACK TO THE CLIENT AS A JSON RESPONSE
-            res.status(200).json({ message: "User fetched successfully", user: result.rows[0], authenticatedUserData: req.user});
+            res.status(200).json({ message: "User fetched successfully", user: result.rows[0]});
          }
       }
     }
@@ -71,61 +130,6 @@ router.get('/:id', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     }
 });   
-
-// CREATE A NEW USER
-// POST REQUEST: HTTP://URL/API/USERS
-router.post('/', async (req, res) => {
-   try 
-   {
-      const { name, email } = req.body; // GET THE NAME AND EMAIL FROM THE BODY OF THE REQUEST
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      // VALIDATION CHECKS
-      if(!name || typeof name !== 'string' || name.length < 2)
-      {
-         return res.status(400).json({ error: 'Name must be atleast 2 characters' });
-      }
-      if(!email || typeof email !== 'string' || !email.match(emailRegex))
-      {
-         return res.status(400).json({ error: 'Invalid email address' });
-      }
-      else
-      {
-         // CHECK IF EMAIL ALREADY EXISTS
-         const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-         
-         if(existingUser.rows.length > 0)
-         {
-            return res.status(400).json({ error: 'Email already exists' });
-         }
-      }
-
-      // QUERY THE DATABASE TO CREATE A NEW USER   
-      // THE $1 AND $2 ARE PLACEHOLDERS FOR THE NAME AND EMAIL PARAMETERS, WHICH HELPS PREVENT SQL INJECTION ATTACKS
-      // The RETURNING * clause is used to return the newly created user
-      const result = await db.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email]);
-
-      // CHECK IF THE USER WAS CREATED SUCCESSFULLY
-      if(result.rows.length === 0)
-      {
-         // SEND A 400 BAD REQUEST RESPONSE TO THE CLIENT AS A JSON RESPONSE
-         return res.status(400).json({ error: 'Failed to create user' });
-      }
-      else  
-      {
-         // SEND THE RESULT BACK TO THE CLIENT AS A JSON RESPONSE
-         res.status(200).json({ message: "User created successfully", user: result.rows[0]});
-      }
-   }
-   catch (error)
-   {
-      // IF AN ERROR OCCURS, LOG THE ERROR AND SEND A 500 INTERNAL SERVER ERROR RESPONSE TO THE CLIENT
-      console.error('Error creating user:', error);
-
-      // SEND A 500 INTERNAL SERVER ERROR RESPONSE TO THE CLIENT AS A JSON RESPONSE
-      res.status(500).json({ error: 'Internal server error' });
-   }
-});
 
 // UPDATE A USER
 // PUT REQUEST: HTTP://URL/API/USERS/:ID
@@ -156,7 +160,7 @@ router.put('/:id', async (req, res) => {
          else
          {
             // CHECK IF EMAIL ALREADY EXISTS
-            const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            const existingUser = await db.query('SELECT * FROM users WHERE email = $1 AND id != $2', [email, id]);
             
             if(existingUser.rows.length > 0)
             {
@@ -231,7 +235,6 @@ router.delete('/:id', async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
    }
 })
-
 
 // EXPORT THE ROUTER SO IT CAN BE USED IN THE MAIN APPLICATION OR OTHER PARTS OF THE APPLICATION
 // USER ROUTE WILL HAVE DIFFERENT ENDPOINTS THAT CAN BE USED TO GET, CREATE, UPDATE, AND DELETE USERS
