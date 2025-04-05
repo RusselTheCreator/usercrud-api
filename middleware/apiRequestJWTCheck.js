@@ -1,4 +1,3 @@
-
 // THIS FILE CONTAINS THE AUTHENTICATION MIDDLEWARE FOR THE API
 // IT IS USED TO VERIFY THE JWT TOKEN PROVIDED IN THE API REQUEST HEADER
 // IF THE JWT TOKEN IS VALID, THE API REQUEST WILL BE PROCESSED BY THE NEXT MIDDLEWARE OR ROUTE HANDLER
@@ -10,6 +9,37 @@ const dotenv = require('dotenv'); // IMPORT THE DOTENV LIBRARY TO LOAD ENVIRONME
 dotenv.config(); // LOAD THE ENVIRONMENT VARIABLES FROM THE .ENV FILE
 
 const JWT_SECRET = process.env.JWT_SECRET; // GET THE JWT SECRET KEY FROM THE ENVIRONMENT VARIABLES
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   responses:
+ *     UnauthorizedError:
+ *       description: Access denied. No JWT token provided
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               error:
+ *                 type: string
+ *                 example: Access denied. No JWT token provided.
+ *     ForbiddenError:
+ *       description: Invalid or expired JWT token
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               error:
+ *                 type: string
+ *                 example: Invalid or expired JWT token.
+ */
 
 // DEFINE THE AUTHENTICATE TOKEN MIDDLEWARE FUNCTION
 const authenticateToken = (req, res, next) => {

@@ -5,11 +5,67 @@ const db = require('../database/db'); // IMPORT THE DATABASE CONNECTION POOL SO 
 const bcryptjs = require('bcryptjs'); // IMPORT THE BCRYPTJS LIBRARY TO HASH AND SALT THE PASSWORD
 const authorizeRole = require('../middleware/authorizeUserRole'); // IMPORT THE AUTHORIZE USER ROLE MIDDLEWARE
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *         - role
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: The auto-generated id of the user
+ *         name:
+ *           type: string
+ *           description: The name of the user
+ *         email:
+ *           type: string
+ *           description: The email of the user
+ *         role:
+ *           type: string
+ *           enum: [Admin, User]
+ *           description: The role of the user
+ *       example:
+ *         name: John Doe
+ *         email: john@example.com
+ *         password: password123
+ *         role: User
+ */
+
 // DEFINE ROUTES/API ENDPOINTS
 
 // CREATE A NEW USER
 // ONLY ADMIN CAN CREATE A NEW USER
 // POST REQUEST: HTTP://URL/API/USERS
+/**
+ * @swagger
+ * /api/users:
+ *   post:
+ *     summary: Create a new user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 router.post('/', authorizeRole('Admin'), async (req, res) => {
    try 
    {
@@ -73,6 +129,28 @@ router.post('/', authorizeRole('Admin'), async (req, res) => {
 // GET ALL USERS
 // ONLY ADMIN CAN GET ALL USERS
 // GET REQUEST: HTTP://URL/API/USERS
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 router.get('/', authorizeRole('Admin'), async (req, res) => {
     try 
     {
@@ -95,6 +173,33 @@ router.get('/', authorizeRole('Admin'), async (req, res) => {
 // GET USER METRICS
 // ONLY ADMIN CAN GET USER METRICS
 // GET REQUEST: HTTP://URL/API/USERS/METRICS
+/**
+ * @swagger
+ * /api/users/metrics:
+ *   get:
+ *     summary: Get user metrics
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User metrics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalUsersCount:
+ *                   type: integer
+ *                 adminsCount:
+ *                   type: integer
+ *                 normalUsersCount:
+ *                   type: integer
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 router.get('/metrics', authorizeRole('Admin'), async (req, res) => {
    try
    {
@@ -136,6 +241,35 @@ router.get('/metrics', authorizeRole('Admin'), async (req, res) => {
 // ADMIN CAN GET A SINGLE USER BY ID
 // USER CAN GET THEIR OWN USER INFORMATION
 // GET REQUEST: HTTP://URL/API/USERS/:ID
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/:id', authorizeRole('Admin'),async (req, res) => {
     try 
     {
@@ -180,6 +314,39 @@ router.get('/:id', authorizeRole('Admin'),async (req, res) => {
 // ADMIN CAN UPDATE A USER
 // USER CAN UPDATE THEIR OWN USER INFORMATION
 // PUT REQUEST: HTTP://URL/API/USERS/:ID
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   put:
+ *     summary: Update a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
 router.put('/:id', async (req, res) => {
    try
    {

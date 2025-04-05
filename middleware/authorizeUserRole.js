@@ -1,3 +1,23 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Role:
+ *       type: string
+ *       enum: [Admin, User]
+ *   responses:
+ *     ForbiddenRoleError:
+ *       description: Access denied due to insufficient privileges
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               error:
+ *                 type: string
+ *                 example: Access denied. Insufficient privileges.
+ */
+
 const authorizeRole = (role) => {
    return (req, res, next) => {
       // CHECK IF LOGGED IN USER IS AUTHORIZED TO ACCESS THE ROUTER ROUTE/ENDPOINT

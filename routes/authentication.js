@@ -14,6 +14,84 @@ const JWT_SECRET = process.env.JWT_SECRET; //GET THE JWT SECRET KEY FROM THE ENV
 
 // DEFINE ROUTES/API ENDPOINTS
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     AuthRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: User's email address
+ *         password:
+ *           type: string
+ *           format: password
+ *           description: User's password
+ *     RegisterRequest:
+ *       allOf:
+ *         - $ref: '#/components/schemas/AuthRequest'
+ *         - type: object
+ *           required:
+ *             - name
+ *             - role
+ *           properties:
+ *             name:
+ *               type: string
+ *               description: User's full name
+ *             role:
+ *               type: string
+ *               enum: [Admin, User]
+ *               description: User's role
+ *     AuthResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *         user:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: integer
+ *             name:
+ *               type: string
+ *             email:
+ *               type: string
+ *             role:
+ *               type: string
+ *         jwtToken:
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /api/authentication/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Invalid input data
+ *       500:
+ *         description: Server error
+ */
+
 // POST REQUEST: HTTP://URL/API/AUTHENTICATION/REGISTER
 router.post('/register', async (req, res) => {
    const { name, email, password, role } = req.body;
@@ -63,6 +141,33 @@ router.post('/register', async (req, res) => {
       return res.status(500).json({error: 'Internal server error'});
    }
 });
+
+/**
+ * @swagger
+ * /api/authentication/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AuthRequest'
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
+ */
 
 // POST REQUEST: HTTP://URL/API/AUTHENTICATION/LOGIN
 router.post('/login', async (req, res) => {

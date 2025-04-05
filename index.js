@@ -2,6 +2,7 @@
 const express = require('express'); // IMPORT THE EXPRESS FRAMEWORK
 const cors = require('cors'); // IMPORT THE CORS LIBRARY ENABLING CROSS-ORIGIN RESOURCE SHARING
 const dotenv = require('dotenv'); // IMPORT THE DOTENV LIBRARY TO LOAD ENVIRONMENT VARIABLES FROM THE .ENV FILE
+const { swaggerUi, specs } = require('./routes/swagger'); // IMPORT SWAGGER CONFIGURATION
 
 dotenv.config(); // LOADS THE ENVIRONMENT VARIABLES FROM THE .ENV FILE
 
@@ -29,6 +30,9 @@ app.use(logger); // LOG THE REQUEST METHOD AND URL
 // THE API WILL ROUTE THE REQUEST TO THE APPROPRIATE ROUTER AS DEFINED BELOW IN THE SECOND ARGUMENT
 app.use('/api/authentication', authentication); // AUTHENTICATION ROUTES - NO TOKEN REQUIRED
 app.use('/api/users', authenticateToken, users); // PROTECT ALL USER ROUTES WITH JWT AUTHENTICATION
+
+// SWAGGER DOCUMENTATION API ENDPOINT
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 
 // START THE SERVER
 const PORT = process.env.PORT;
