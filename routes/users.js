@@ -155,7 +155,7 @@ router.get('/', authorizeRole('Admin'), async (req, res) => {
     try 
     {
       // QUERY THE DATABASE TO GET ALL USERS
-      const result = await db.query('SELECT * FROM users');
+      const result = await db.query('SELECT id,name, email, role, created_at FROM users');
 
       // SEND THE RESULT BACK TO THE CLIENT AS A JSON RESPONSE
       res.status(200).json({ message: "Users fetched successfully", users: result.rows});
@@ -285,7 +285,7 @@ router.get('/:id', authorizeRole('Admin'),async (req, res) => {
       {
          // QUERY THE DATABASE TO GET THE USER WITH THE SPECIFIED ID
          // THE $1 IS A PLACEHOLDER FOR THE ID PARAMETER, WHICH HELPS PREVENT SQL INJECTION ATTACKS
-         const result = await db.query('SELECT * FROM users WHERE id = $1', [id]);
+         const result = await db.query('SELECT id,name, email, role, created_at FROM users WHERE id = $1', [id]);
 
          // CHECK IF THE USER EXISTS
          if(result.rows.length === 0)
